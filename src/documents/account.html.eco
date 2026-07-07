@@ -1,0 +1,106 @@
+---
+title: "Account"
+layout: "default"
+priority: 10
+---
+
+<h1>Account</h1>
+
+<section id="login-section">
+  <h2>Login</h2>
+  <form id="login-form" action="/api/account/login" method="post">
+    <div class="field">
+      <label for="login-email">Email Address</label>
+      <input type="email" id="login-email" name="email" placeholder="your@email.com" required />
+    </div>
+    <div class="field">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" name="password" placeholder="Enter your password" required />
+    </div>
+    <button type="submit" class="ui primary button">Login</button>
+  </form>
+  <p>Don't have an account? <a href="/account/register">Register here</a></p>
+</section>
+
+<section id="register-section" style="display:none;">
+  <h2>Create Account</h2>
+  <form id="register-form" action="/api/account/register" method="post">
+    <div class="field">
+      <label for="reg-name">Full Name</label>
+      <input type="text" id="reg-name" name="name" placeholder="John Doe" required />
+    </div>
+    <div class="field">
+      <label for="reg-email">Email Address</label>
+      <input type="email" id="reg-email" name="email" placeholder="your@email.com" required />
+    </div>
+    <div class="field">
+      <label for="reg-password">Password</label>
+      <input type="password" id="reg-password" name="password" placeholder="Min 8 characters" minlength="8" required />
+    </div>
+    <div class="field">
+      <label for="reg-confirm">Confirm Password</label>
+      <input type="password" id="reg-confirm" name="confirm_password" placeholder="Re-enter password" required />
+    </div>
+    <button type="submit" class="ui green button">Create Account</button>
+  </form>
+  <p>Already have an account? <a href="/account/login">Login here</a></p>
+</section>
+
+<script>
+  // Toggle between login and register views
+  document.addEventListener('DOMContentLoaded', function() {
+    var loginLink = document.querySelector('#login-section a');
+    var registerLink = document.querySelector('#register-section a');
+    var loginSection = document.getElementById('login-section');
+    var registerSection = document.getElementById('register-section');
+    
+    if (loginLink) {
+      loginLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        loginSection.style.display = 'none';
+        registerSection.style.display = 'block';
+      });
+    }
+    
+    if (registerLink) {
+      registerLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        registerSection.style.display = 'none';
+        loginSection.style.display = 'block';
+      });
+    }
+    
+    // Register form validation
+    var regForm = document.getElementById('register-form');
+    if (regForm) {
+      regForm.addEventListener('submit', function(e) {
+        var password = document.getElementById('reg-password').value;
+        var confirm = document.getElementById('reg-confirm').value;
+        if (password !== confirm) {
+          e.preventDefault();
+          alert('Passwords do not match!');
+          return false;
+        }
+      });
+    }
+    
+    // Check for saved session
+    var savedUser = localStorage.getItem('inlinegui_user');
+    if (savedUser) {
+      try {
+        var user = JSON.parse(savedUser);
+        document.getElementById('login-section').innerHTML = 
+          '<h2>Welcome back, ' + user.name + '!</h2>' +
+          '<p>Email: ' + user.email + '</p>' +
+          '<button onclick="logout()" class="ui red button">Logout</button>';
+      } catch(e) {
+        localStorage.removeItem('inlinegui_user');
+      }
+    }
+  });
+  
+  function logout() {
+    localStorage.removeItem('inlinegui_user');
+    location.reload();
+  }
+</script>
